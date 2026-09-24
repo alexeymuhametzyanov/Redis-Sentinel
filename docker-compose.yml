@@ -1,0 +1,101 @@
+services:
+    redis-1:
+        image: amd64/redis:8.8.3-trixie
+        container_name: redis-1
+        network_mode: "host"
+        hostname: redis-1
+        command: redis-server /etc/redis/redis.conf
+        environment:
+            - TZ=Europe/Moscow
+        volumes:
+            - ./redis_1/configs:/etc/redis:rw
+            - ./redis_1/data:/var/lib/redis:rw
+            - ./redis_1/logs:/var/log/redis:rw
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+
+    redis-2:
+        image: amd64/redis:8.8.3-trixie
+        container_name: redis-2
+        network_mode: "host"
+        hostname: redis-2
+        command: redis-server /etc/redis/redis.conf
+        environment:
+            - TZ=Europe/Moscow
+        volumes:
+            - ./redis_2/configs:/etc/redis:rw
+            - ./redis_2/data:/var/lib/redis:rw
+            - ./redis_2/logs:/var/log/redis:rw
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+        depends_on:
+           - redis-1
+
+    sentinel-1:
+        image: amd64/redis:8.8.3-trixie
+        container_name: sentinel-1
+        network_mode: "host"
+        hostname: sentinel-1
+        command: redis-server /etc/redis/sentinel.conf --sentinel
+        environment:
+            - TZ=Europe/Moscow
+        volumes:
+            - ./sentinel_1/configs:/etc/redis:rw
+            - ./sentinel_1/data:/var/lib/sentinel:rw
+            - ./sentinel_1/logs:/var/log/redis:rw
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+        depends_on:
+            - redis-1
+            - redis-2
+            
+    sentinel-2:
+        image: amd64/redis:8.8.3-trixie
+        container_name: sentinel-2
+        network_mode: "host"
+        hostname: sentinel-2
+        command: redis-server /etc/redis/sentinel.conf --sentinel
+        environment:
+            - TZ=Europe/Moscow
+        volumes:
+            - ./sentinel_2/configs:/etc/redis:rw
+            - ./sentinel_2/data:/var/lib/sentinel:rw
+            - ./sentinel_2/logs:/var/log/redis:rw
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+        depends_on:
+            - redis-1
+            - redis-2
+            
+    sentinel-3:
+        image: amd64/redis:8.8.3-trixie
+        container_name: sentinel-3
+        network_mode: "host"
+        hostname: sentinel-3
+        command: redis-server /etc/redis/sentinel.conf --sentinel
+        environment:
+            - TZ=Europe/Moscow
+        volumes:
+            - ./sentinel_3/configs:/etc/redis:rw
+            - ./sentinel_3/data:/var/lib/sentinel:rw
+            - ./sentinel_3/logs:/var/log/redis:rw
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+        depends_on:
+            - redis-1
+            - redis-2
